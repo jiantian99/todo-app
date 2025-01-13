@@ -19,6 +19,12 @@
       <el-button type="primary" @click="addTodo" class="add-button">添加</el-button>
     </div>
 
+    <div class="action-bar">
+      <el-button type="danger" @click="confirmClearAll" :disabled="!todos.length">
+        一键清空
+      </el-button>
+    </div>
+
     <el-divider />
 
     <el-table :data="sortedTodos" style="width: 100%">
@@ -89,8 +95,16 @@ export default {
   },
   computed: {
     sortedTodos() {
-      const priorityOrder = Object.freeze({ critical: 3, urgent: 2, normal: 1 });
-      return [...this.todos].sort((a, b) => priorityOrder[b.priority] - priorityOrder[a.priority]);
+      return [...this.todos].sort((a, b) => {
+        if (a.done !== b.done) {
+          return a.done ? 1 : -1;
+        }
+        if (!a.done) {
+          const priorityOrder = { critical: 3, urgent: 2, normal: 1 };
+          return priorityOrder[b.priority] - priorityOrder[a.priority];
+        }
+        return 0;
+      });
     },
     getCurrentPriorityType() {
       const priorityMap = Object.freeze({
@@ -153,6 +167,28 @@ export default {
       const priorityOrder = Object.freeze(['normal', 'urgent', 'critical']);
       const currentIndex = priorityOrder.indexOf(this.newPriority);
       this.newPriority = priorityOrder[(currentIndex + 1) % priorityOrder.length];
+    },
+    confirmClearAll() {
+      this.$confirm('确认清空所有待办事项吗？此操作不可恢复', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.clearAll();
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消清空操作'
+        });
+      });
+    },
+    clearAll() {
+      this.todos = [];
+      this.saveTodos();
+      this.$message({
+        type: 'success',
+        message: '已清空所有待办事项'
+      });
     },
   },
   mounted() {
@@ -228,5 +264,15 @@ h1 {
 
 .priority-tag:hover {
   opacity: 0.8;
+}
+
+.action-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin: 20px 0;
+}
+
+.action-bar .el-button {
+  margin-left: 10px;
 }
 </style>
