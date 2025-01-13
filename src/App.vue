@@ -17,9 +17,6 @@
         class="todo-input"
       />
       <el-button type="primary" @click="addTodo" class="add-button">添加</el-button>
-    </div>
-
-    <div class="action-bar">
       <el-button type="danger" @click="confirmClearAll" :disabled="!todos.length">
         一键清空
       </el-button>
@@ -218,10 +215,11 @@ h1 {
   gap: 10px;
   margin-bottom: 20px;
   width: 100%;
+  align-items: center;
 }
 
 .todo-input {
-  width: 70%;
+  flex: 1;
 }
 
 .add-button.el-button {
@@ -264,15 +262,5 @@ h1 {
 
 .priority-tag:hover {
   opacity: 0.8;
-}
-
-.action-bar {
-  display: flex;
-  justify-content: flex-end;
-  margin: 20px 0;
-}
-
-.action-bar .el-button {
-  margin-left: 10px;
 }
 </style>
